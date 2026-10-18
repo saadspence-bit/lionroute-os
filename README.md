@@ -14,7 +14,7 @@ This portfolio project demonstrates an **observer-only operations dashboard** us
 Command Center; Operations with nested traces; History / Replay; Projects; Agents & Models; Workstreams; System Map; Evidence; Authority; and read-only Terminal. Filtering, keyboard navigation and drill-down are presentation behavior, not system actions.
 
 ## Local setup
-Requires Node.js 24+ and npm 11+.
+Requires Node.js 24+ and npm 11+. All displayed records are synthetic; no accounts or private API keys are needed.
 
     npm ci
     npm run check:source
@@ -31,7 +31,7 @@ The app is hard-locked to local synthetic telemetry even if gateway environment 
 See docs/ARCHITECTURE.md, docs/PUBLICATION_GATES.md, docs/DUAL_TRACK_UPDATES.md, docs/LICENSING_DECISION.md, ROADMAP.md, SECURITY.md, and CHANGELOG.md.
 
 ## Learning in public
-Once released, this repository is intended to show visible, reviewed iterations with meaningful commits, tests, a changelog and roadmap. The private workspace is never mirrored automatically. A reviewed, read-only update planner identifies approved-source candidate changes without pushing or importing history.
+This public repository shows reviewed iterations through Git commits, passing CI, release notes, a roadmap, and independent update history. The private workspace is never mirrored automatically. A read-only update planner compares a small approved subset of committed private source files and flags them for manual sanitization; it cannot push, merge, grant publication authority, or import private history.
 
 ## License
 The public Control Plane project is licensed under **Apache License 2.0** (see [LICENSE](LICENSE)). Dependencies retain their own licenses, documented in [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md). The separate private LionRoute workspace is not part of this license grant.

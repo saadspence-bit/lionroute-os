@@ -5,9 +5,9 @@ LionRoute has **two destinations**, not two uncontrolled copies:
 | Track | Purpose | Visibility | Update policy |
 | --- | --- | --- | --- |
 | Private LionRoute workspace | Full system, private context, protected runtime, experimental integrations | Private | Existing governed branch, validation and Git procedures |
-| Public LionRoute Control Plane | Selected working code, fictional data, public tests, architecture, roadmap and releases | Intended open-source portfolio (pending first publication) | Curated, reviewed changes only |
+| Public LionRoute Control Plane | Selected working code, fictional data, public tests, architecture, roadmap and releases | Public (Apache 2.0) | Curated, reviewed changes only |
 
-The public repository serves **both** as reusable open-source code and an employer portfolio. An approved OSI-compatible license remains a separate decision; see [Licensing](LICENSING_DECISION.md).
+The public repository serves **both** as reusable open-source code and an employer portfolio. Apache License 2.0 is approved for the released public source only; see [Licensing](LICENSING_DECISION.md).
 
 ## Each meaningful development milestone
 

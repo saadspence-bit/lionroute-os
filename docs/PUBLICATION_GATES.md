@@ -1,6 +1,6 @@
-# Publication gates
+# v0.1.0 initial public release gates
 
-A passing local build is not authority to publish.
+A passing local build alone does not grant permission to publish. These gates document the separately approved v0.1.0 first publication. Every future release requires a new review of its exact content.
 
 - [x] Pinned-source, allowlisted export with no copied private Git history
 - [x] Synthetic telemetry replacing operational samples
@@ -16,9 +16,9 @@ A passing local build is not authority to publish.
 - [x] Third-party dependency/asset/attribution inventory reviewed; no vendor code or private images copied into export
 - [x] Browser functional/semantic review and synthetic-only screenshot; CSP network-block canary passed
 - [x] Browser semantic navigation and mock-only UI reviewed; comprehensive assistive-technology validation remains a future roadmap improvement
-- [x] Independent reviewer accepted local technical security candidate after removing gateway/SSE and adding CSP; first live publication still subject to GitHub CI
-- [ ] Clean independent Git initialization and approved first commit
+- [x] Independent reviewer approved the local technical security candidate after removing gateway/SSE and adding CSP; initial GitHub Actions validation passed
+- [x] Clean independent initial Git history and approved first commit (9e7cb46); no private Git ancestry
 - [x] Owner explicitly approved Apache 2.0, separate public GitHub repository and first publication
-- [ ] Anonymous read verification after publication
+- [x] Anonymous HTTP 200 verification of public repository, README and Apache license after publication
 
 Never push any ancestry, credentials, files, or Git metadata from the private LionRoute workspace; no automatic private-to-public sync.

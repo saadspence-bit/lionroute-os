@@ -28,6 +28,6 @@ This document concerns only the new public Control Plane demo, NOT the private L
 
 ## Publication-specific verification
 
-The first reviewed Git commit, GitHub Actions CI run, public visibility change, release tag and anonymous GitHub access test must occur in that order. These are not represented here as completed prematurely. A passing scan is not a guarantee against all unknown vulnerabilities or third-party rights claims.
+The first reviewed public Git commit is 9e7cb46f6aab7d6de4a73ca252e3384e0c51b16d (a parentless root commit). Initial GitHub Actions run 39090598670 passed the pinned secret scanner, npm audit, Python tests, public preflight, source check, TypeScript, Vitest, and production build. The repository was made public only after the staging CI passed. Anonymous GitHub API and raw README/LICENSE requests returned HTTP 200, and GitHub reported the repository as public and Apache-2.0 licensed. These checks do not rule out all vulnerabilities or third-party ownership claims.
 
 The private workspace remains private and on its own history. Public updates are separately curated, reviewed and tested before publication.

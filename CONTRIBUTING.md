@@ -9,4 +9,4 @@ Future contributions must keep telemetry synthetic, preserve mock-only runtime m
     npm test
     npm run build
 
-Use reviewed pull requests after an explicit contribution and licensing policy is established.
+Submit changes through reviewed pull requests under the repository Apache-2.0 license; do not merge private-workspace code merely because it is present in another repository. Security-sensitive changes require explicit review and reproducible tests.
