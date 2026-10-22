@@ -18,6 +18,14 @@ The reviewed v0.2.0 update introduces a responsive Command Center on tablets and
 
 *Generated from a 390-pixel Chrome viewport using the synthetic-only demo, included in the v0.2.0 release.* See [responsive acceptance notes](docs/RESPONSIVE_ACCEPTANCE.md).
 
+## Guided Demo (v0.3 development preview)
+
+A new five-stop interactive walkthrough helps visitors explore the **fictional** project registry, operations and nested traces, observer-derived history, example evidence, and the logical system map. Visitors can open each existing view, return to the same walkthrough stop, jump between stops, or finish the guide.
+
+![Synthetic Guided Demo walkthrough](docs/screenshots/guided-demo-v0.3-synthetic.png)
+
+*Original screenshot from a local read-only synthetic-data preview. This feature is in a development branch and is not part of the tagged v0.2.0 release.* See [Guided Demo acceptance](docs/GUIDED_DEMO_ACCEPTANCE.md).
+
 ## Features
 Command Center; Operations with nested traces; History / Replay; Projects; Agents & Models; Workstreams; System Map; Evidence; Authority; and read-only Terminal. Filtering, keyboard navigation and drill-down are presentation behavior, not system actions.
 
