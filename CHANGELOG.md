@@ -1,13 +1,13 @@
 # Changelog
 
-## Unreleased ? v0.3 Guided Interactive Demonstrations
+## v0.3.0 (2026-10-22) ? v0.3 Guided Interactive Demonstrations
 
 - Add a five-stop guided walkthrough spanning sample projects, operations, trace history, evidence and a logical system map.
 - Derive demo sample labels and counts from the existing bundled fictional telemetry, with empty-data fallbacks.
 - Add read-only navigation into existing screens, a return-to-guide action that preserves the selected stop, and a finish/reset path.
 - Include seven new guided-demo model tests, local browser interactions and an original synthetic screenshot.
 - Keep the demo fully local, observer-only and network-denied; no real provider, credential, job action or deployment added.
-- Development branch only: v0.2.0 remains the latest tagged public release pending independent review and PR approval.
+- Independently reviewed feature pull request #6 merged into public main as dad35532043cec5fb6e32d81657036aee314553d; post-merge GitHub Actions run 39854654631 passed. This source release does not include hosting or production telemetry.
 
 
 ## v0.2.0 ? Responsive Command Center (2026-10-22)

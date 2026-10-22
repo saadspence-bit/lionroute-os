@@ -1,4 +1,4 @@
-# v0.3 Guided Demo ? Development acceptance
+# v0.3.0 Guided Demo ? Release acceptance
 
 This feature builds on the public, synthetic-only LionRoute OS Control Plane. It does not access or operate the private workspace.
 
@@ -25,9 +25,9 @@ A return-to-guide button preserves the current stop after exploring a screen. Vi
 
 ## Release boundaries and limitations
 
-- This is a *development candidate*, not a v0.3.0 release, a hosted demo, or an assurance of production behavior.
+- This describes the reviewed v0.3.0 public source release; it is not a hosted demo or an assurance of production behavior.
 - Public runtime remains locked to synthetic telemetry and its browser CSP denies application network connections.
 - The tour has no broker, provider, cloud, credential, external redirect, hidden job execution or write-back capability.
 - The five sample destinations are fixed; counts and names derive from the fictional fixture, never a private endpoint.
 - Full assistive-technology acceptance remains future work. Automated functional browser checks are not a comprehensive accessibility certification.
-- PR CI, independent read-only review and final publication/merge authorization are separate requirements.
+- Feature PR #6 underwent independent read-only review (APPROVE/no blockers); public main GitHub Actions run 39854654631 passed after merging. Future changes require their own independent review, GitHub CI and explicit publication authority.
