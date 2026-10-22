@@ -1,4 +1,4 @@
-# v0.2 Responsive Command Center ? Development acceptance
+# v0.2.0 Responsive Command Center ? Release acceptance
 
 This page records behavior validated **locally on an isolated public feature branch**, not production LionRoute OS activity. Every screen record in the UI and screenshot is fictional.
 
@@ -25,7 +25,7 @@ This page records behavior validated **locally on an isolated public feature bra
 
 These were measured in Chrome headless through a local-only browser debugging connection. Browser interaction smoke confirmed opening the 390px modal drawer with aria-modal=true, main.inert=true and scroll lock, keyboard focus on the active destination, selecting Projects, and closing with Escape while restoring focus, unlocking scrolling and reactivating main content. The 390px screenshot was captured from the local preview with an extension-free temporary Chrome profile. All temporary browser processes were stopped afterward.
 
-The automated Vitest suite includes **six new navigation-focus tests** and retains the 57 existing UI tests. Source/HTML/CSS guards, typecheck, build and dedicated secret scanning must remain green before any public PR is merged.
+The validated public UI suite includes **six new navigation-focus tests** and 57 existing UI tests, totaling 63 passing tests. Source/HTML/CSS guards, TypeScript, build and dedicated secret scanning passed before PR #4 was merged. GitHub Actions also passed on the post-merge public main commit.
 
 ## Remaining limitations
 

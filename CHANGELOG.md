@@ -1,12 +1,12 @@
 # Changelog
 
-## Unreleased ? v0.2 Responsive Command Center (development branch)
+## v0.2.0 ? Responsive Command Center (2026-10-22)
 
 - Replace cramped mobile navigation with a labeled keyboard-accessible drawer at widths of 900 pixels and below.
 - Preserve the desktop rail on wider screens, with focus management, Escape and backdrop dismissal, and page selection.
 - Introduce a compact navigation model with six regression tests; baseline UI tests and synthetic-only guards remain active.
 - Add an original fictional-data mobile screenshot and responsive browser-acceptance evidence.
-- Public main and the v0.1.0 release stay unchanged until independent PR review and approval.
+- Approved pull request #4 merged to public main with successful post-merge GitHub Actions; preserved existing private LionRoute workspace and synthetic-only application boundary.
 
 
 ## v0.1.0 ? Initial public Control Plane demo (2026-10-17)
