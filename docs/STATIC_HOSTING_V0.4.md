@@ -11,7 +11,7 @@ The intended future site is a public GitHub Pages project site under the reposit
 - Vite uses base / for local development. Only npm run build:pages explicitly enables the reviewed /lionroute-os/ asset base.
 - HTML includes a strict meta Content Security Policy: default-src none, script-src self, connect-src none, object-src none and form-action none. JavaScript, CSS and favicon must resolve under the same repository path.
 - The runtime telemetry source is pinned to fictional in-repo data. Source validation rejects browser network calls and browser-side mutation APIs.
-- A fail-closed artifact verifier checks CSP, asset integrity, no source maps/environment files/custom domain, no symlinks, and bounded bundle size and file count.
+- A fail-closed artifact verifier checks CSP, asset integrity, no source maps/environment files/custom domain, no symlinks or dotfiles, and bounded bundle size and file count. The Pages upload action excludes hidden files, so no hidden .nojekyll marker is generated or relied upon; GitHub Actions deploys the ready-made static artifact without Jekyll processing.
 - GitHub Pages is **static-only**. No dynamic backend, authentication, payments, cookies, operator control, repository secrets or API credentials are required or authorized.
 - This meta CSP is enforced by supporting browsers. GitHub Pages does not provide arbitrary custom HTTP security headers through this repo; do not claim that frame-ancestors or other HTTP-only headers are enforced.
 - Content served as public Pages is visible to everyone. Never expose private project data, identifying logs or user-supplied secrets in future updates.
@@ -20,7 +20,7 @@ The intended future site is a public GitHub Pages project site under the reposit
 
 The proposed .github/workflows/pages-manual.yml is **workflow_dispatch only**. It does NOT deploy on pushes, PRs, merges, release tags or scheduled events. The build job has read-only repository permissions. Only the separate deploy job receives pages:write and id-token:write, after a successful verified build.
 
-A dispatch requires: (1) repository owner, (2) default main branch, (3) explicitly approved 40-character main commit SHA matching the dispatch commit, and (4) an exact manual confirmation phrase. Protect the github-pages deployment environment with a default-branch-only rule and owner approval where available. All external GitHub Actions are pinned to full upstream commit hashes. No cross-repository publishing credentials are added.
+A dispatch requires: (1) repository owner, (2) default main branch, (3) explicitly approved 40-character main commit SHA matching the dispatch commit, and (4) an exact manual confirmation phrase. Protect the github-pages deployment environment with a default-branch-only rule and owner approval where available. All external GitHub Actions **in the manual deployment workflow** are pinned to full upstream commit hashes; the pre-existing general CI workflow is handled separately. No cross-repository publishing credentials are added.
 
 Because the site does not yet exist, **merging the workflow is NOT deployment approval**. Actual activation requires a separate explicit owner decision after independent review and GitHub CI.
 

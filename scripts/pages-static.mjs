@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { existsSync, lstatSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, lstatSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -23,7 +23,7 @@ function fileInventory(directory) {
         assert(stat.isFile(), "Pages bundle cannot contain special files: " + relative);
         assert(!/(^|\/)(?:\.git|node_modules|__pycache__)(\/|$)/i.test(relative), "Forbidden Pages path: " + relative);
         assert(!/(?:^|\/)(?:\.env(?:\..*)?|CNAME|\.nojekyll\.bak)$|\.(?:map|pem|pfx|key|db|sqlite|pyc)$/i.test(relative), "Forbidden Pages file: " + relative);
-        assert(["index.html", "favicon.svg", ".nojekyll"].includes(relative)
+        assert(["index.html", "favicon.svg"].includes(relative)
           || /^assets\/[a-zA-Z0-9_-]+\.(?:js|css)$/.test(relative), "Unreviewed Pages file type: " + relative);
         size += stat.size;
         entries.push(relative);
@@ -40,7 +40,6 @@ export function verifyPagesDirectory(directory) {
   const names = fileInventory(directory);
   assert(names.includes("index.html"), "Missing index.html");
   assert(names.includes("favicon.svg"), "Missing local favicon");
-  assert(names.includes(".nojekyll"), "Missing GitHub Pages nojekyll marker");
   assert(!names.includes("CNAME"), "Custom domain is not authorized");
   const raw = readFileSync(path.join(directory, "index.html"), "utf8");
   const normalized = raw.replaceAll("&#39;", "'").replaceAll("&apos;", "'");
@@ -79,7 +78,6 @@ export function buildPages(root) {
     });
   }
   const dist = path.join(root, "dist");
-  writeFileSync(path.join(dist, ".nojekyll"), "", { flag: "w" });
   return verifyPagesDirectory(dist);
 }
 
