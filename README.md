@@ -10,6 +10,14 @@ This portfolio project demonstrates an **observer-only operations dashboard** us
 
 *Screenshot generated from the local mock-only browser build. All displayed activity, evidence and project information are fictional and not production telemetry.*
 
+## v0.2 responsive navigation preview (in development)
+
+The next reviewed update introduces a full-width Command Center on tablets and phones and an accessible compact navigation drawer. The drawer provides active-page announcements, keyboard focus wrapping, Escape-to-close, focus restoration, and scroll locking while open. The desktop navigation remains available at wider screen sizes.
+
+![Mobile navigation in the v0.2 synthetic demo](docs/screenshots/control-plane-v0.2-mobile-navigation.png)
+
+*Generated from a 390-pixel Chrome viewport using the synthetic-only demo. This preview is proposed development work, not part of the v0.1.0 release.* See [responsive acceptance notes](docs/RESPONSIVE_ACCEPTANCE.md).
+
 ## Features
 Command Center; Operations with nested traces; History / Replay; Projects; Agents & Models; Workstreams; System Map; Evidence; Authority; and read-only Terminal. Filtering, keyboard navigation and drill-down are presentation behavior, not system actions.
 
