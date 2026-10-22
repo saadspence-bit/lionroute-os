@@ -6,7 +6,7 @@
 | Dual-track iteration workflow | Published | Allowlisted source comparison, read-only diff planner, quarantined review packages, no automatic public copying |
 | v0.1 open-source publication | Released | Apache 2.0, dedicated secret scan, independent review, isolated clean Git history, GitHub CI and anonymous access |
 | v0.2 responsive navigation | Released source | Responsive tablet/mobile shell, modal drawer focus, no observed horizontal overflow, keyboard tests and browser checks |
-| v0.3 interactive guided demo | In development | Five-step read-only walkthrough of projects, operations, history, evidence and system map with tests and screenshot |
+| v0.3 interactive guided demo | Released source | Five-step read-only walkthrough of projects, operations, history, evidence and system map with tests and screenshot |
 | v0.4 safe hosting evaluation | Planned | Separate static deployment security review, no private gateways or credentials |
 | Future | Exploratory | Additional visualization/adapters, no live authority by default |
 
