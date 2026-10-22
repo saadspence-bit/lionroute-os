@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased ? v0.2 Responsive Command Center (development branch)
+
+- Replace cramped mobile navigation with a labeled keyboard-accessible drawer at widths of 900 pixels and below.
+- Preserve the desktop rail on wider screens, with focus management, Escape and backdrop dismissal, and page selection.
+- Introduce a compact navigation model with six regression tests; baseline UI tests and synthetic-only guards remain active.
+- Add an original fictional-data mobile screenshot and responsive browser-acceptance evidence.
+- Public main and the v0.1.0 release stay unchanged until independent PR review and approval.
+
+
 ## v0.1.0 ? Initial public Control Plane demo (2026-10-17)
 
 - Exported an explicit allowlist of browser Control Plane source files to a standalone local folder with no private Git history.

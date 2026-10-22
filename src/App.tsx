@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   Activity,
   Boxes,
@@ -7,6 +7,7 @@ import {
   GitBranch,
   History,
   ListTree,
+  Menu,
   Bot,
   FolderKanban,
   Search,
@@ -15,12 +16,14 @@ import {
   Sparkles,
   TerminalSquare,
   Workflow,
+  X,
 } from "lucide-react";
 import { Command as CommandMenu } from "cmdk";
 import { useTelemetry, type TelemetrySource } from "./data/source";
 import { summarizeControlPlane } from "./data/derive";
 import type { Operation, OperationStatus, TelemetrySnapshot, TraceStep } from "./types";
 import OperationalPosture from "./features/command-center/OperationalPosture";
+import { COMPACT_NAVIGATION_QUERY, drawerFocusWrap } from "./features/navigation/model";
 
 const SystemMap = lazy(() => import("./features/system-map/SystemMap"));
 const Operations = lazy(() => import("./features/operations/Operations"));
@@ -207,8 +210,73 @@ export function App() {
   const [view, setView] = useState<View>("command");
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [selectedOperationId, setSelectedOperationId] = useState("");
+  const [isCompact, setIsCompact] = useState(() => window.matchMedia(COMPACT_NAVIGATION_QUERY).matches);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const shouldRestoreFocus = useRef(false);
 
-  useEffect(() => { const onKey = (e: KeyboardEvent) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setPaletteOpen((v) => !v); } }; window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey); }, []);
+  const closeMenu = () => {
+    shouldRestoreFocus.current = isCompact;
+    setMenuOpen(false);
+  };
+  const navigateTo = (nextView: View) => {
+    setView(nextView);
+    if (menuOpen) closeMenu();
+  };
+
+  useEffect(() => { const onKey = (e: KeyboardEvent) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setPaletteOpen((v) => !v); setMenuOpen(false); } }; window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey); }, []);
+  useEffect(() => {
+    const query = window.matchMedia(COMPACT_NAVIGATION_QUERY);
+    const update = () => {
+      setIsCompact(query.matches);
+      if (!query.matches) setMenuOpen(false);
+    };
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+  useEffect(() => {
+    if (!isCompact || !menuOpen) return;
+    const navElement = navRef.current;
+    navElement?.querySelector<HTMLButtonElement>(".nav-items button.active")?.focus();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeMenu();
+      }
+      if (event.key !== "Tab" || !navElement) return;
+      const buttons = [...navElement.querySelectorAll<HTMLButtonElement>("button:not([disabled])")];
+      if (!buttons.length) return;
+      const destination = drawerFocusWrap(
+        event.shiftKey,
+        buttons.findIndex((button) => button === document.activeElement),
+        buttons.length,
+        navElement.contains(document.activeElement),
+      );
+      if (destination) {
+        event.preventDefault();
+        (destination === "first" ? buttons[0] : buttons[buttons.length - 1])?.focus();
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [isCompact, menuOpen]);
+
+  useEffect(() => {
+    if (!isCompact || !menuOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = previous; };
+  }, [isCompact, menuOpen]);
+
+  useEffect(() => {
+    if (!menuOpen && shouldRestoreFocus.current) {
+      shouldRestoreFocus.current = false;
+      menuButtonRef.current?.focus();
+    }
+  }, [menuOpen]);
+
   const selectedOperation = useMemo(() => data?.operations.find((o) => o.id === selectedOperationId) ?? data?.operations[0], [data, selectedOperationId]);
 
   const selectNextOperation = () => {
@@ -227,10 +295,41 @@ export function App() {
   const telemetryDegraded = Boolean(error);
   const showGlobalInspector = Boolean(selectedOperation && !["operations", "history", "projects", "agents", "workstreams", "system", "evidence", "authority", "terminal", "settings"].includes(view));
 
+  const navigation = (
+    <nav
+      ref={navRef}
+      id="primary-navigation"
+      className={`nav-rail${menuOpen ? " drawer-open" : ""}`}
+      aria-label="Primary navigation"
+      aria-hidden={isCompact && !menuOpen ? true : undefined}
+      inert={isCompact && !menuOpen}
+    >
+      <div className="brand">
+        <div className="brand-mark">LR</div>
+        <div><strong>LionRoute</strong><span>CONTROL PLANE</span></div>
+        <button type="button" className="mobile-nav-close" aria-label="Close navigation" onClick={closeMenu}><X size={20}/></button>
+      </div>
+      <div className="nav-items">
+        {nav.map(({id,label,icon:Icon}) => (
+          <button type="button" className={view === id ? "active" : ""} key={id} onClick={() => navigateTo(id)} aria-label={label} aria-current={view === id ? "page" : undefined}>
+            <Icon size={19}/><span>{label}</span>
+          </button>
+        ))}
+      </div>
+      <div className="nav-bottom">
+        <button type="button" onClick={() => { setPaletteOpen(true); if (menuOpen) setMenuOpen(false); }}><Search size={18}/><span>Command</span><kbd>Ctrl/Cmd K</kbd></button>
+        <div className="observer-chip"><span className="pulse"/>Observer only</div>
+      </div>
+    </nav>
+  );
+
   return <div className={`app-shell ${showGlobalInspector ? "" : "no-inspector"}`}>
-    <nav className="nav-rail" aria-label="Primary navigation"><div className="brand"><div className="brand-mark">LR</div><div><strong>LionRoute</strong><span>CONTROL PLANE</span></div></div><div className="nav-items">{nav.map(({id,label,icon:Icon}) => <button className={view === id ? "active" : ""} key={id} onClick={() => setView(id)} aria-label={label}><Icon size={19}/><span>{label}</span></button>)}</div><div className="nav-bottom"><button onClick={() => setPaletteOpen(true)}><Search size={18}/><span>Command</span><kbd>Ctrl/Cmd K</kbd></button><div className="observer-chip"><span className="pulse"/>Observer only</div></div></nav>
-    <main className="main"><header className="topbar"><div className="crumb"><Boxes size={16}/><span>{data.currentState.project}</span><span>/</span><strong>{nav.find((n)=>n.id===view)?.label}</strong></div><div className="top-actions"><SourceChip source={source} isFetching={isFetching} degraded={telemetryDegraded} updatedAt={dataUpdatedAt}/><div className={`fresh fresh-${telemetryDegraded ? "stale" : data.currentState.freshness.toLowerCase()}`}><span/>{telemetryDegraded ? "LCL LAST SNAPSHOT" : `LCL ${data.currentState.freshness}`}</div><button className="operation-switch" onClick={selectNextOperation} disabled={!selectedOperation}><TerminalSquare size={16}/>{selectedOperation?.workstream ?? "No active operation"}</button></div></header><div className="content">{view === "command" && (selectedOperation ? <CommandCenter data={data} operation={selectedOperation} degraded={telemetryDegraded} onNavigate={setView}/> : <IdleCommandCenter data={data} degraded={telemetryDegraded} onNavigate={setView}/>)} {view === "operations" && <Suspense fallback={<div className="panel map-loading">Loading operations…</div>}><Operations operations={data.operations} evidence={data.evidence} selectedOperationId={selectedOperation?.id ?? ""} onSelectOperation={setSelectedOperationId}/></Suspense>} {view === "history" && <Suspense fallback={<div className="panel map-loading">Loading history…</div>}><HistoryReplay data={data} onOpenOperation={(operationId) => { setSelectedOperationId(operationId); setView("operations"); }}/></Suspense>} {view === "projects" && <Suspense fallback={<div className="panel map-loading">Loading projects…</div>}><Projects data={data} onOpenOperation={(operationId) => { setSelectedOperationId(operationId); setView("operations"); }}/></Suspense>} {view === "agents" && <Suspense fallback={<div className="panel map-loading">Loading agents and models…</div>}><AgentsModels data={data} onOpenOperation={(operationId) => { setSelectedOperationId(operationId); setView("operations"); }}/></Suspense>} {view === "workstreams" && <Suspense fallback={<div className="panel map-loading">Loading workstreams…</div>}><Workstreams data={data} onOpenOperation={(operationId) => { setSelectedOperationId(operationId); setView("operations"); }}/></Suspense>} {view === "system" && <Suspense fallback={<div className="panel map-loading">Loading topology…</div>}><SystemMap data={data}/></Suspense>} {view === "evidence" && <Suspense fallback={<div className="panel map-loading">Loading evidence…</div>}><Evidence data={data}/></Suspense>} {view === "authority" && <Suspense fallback={<div className="panel map-loading">Loading authority…</div>}><Authority data={data}/></Suspense>} {view === "terminal" && <Suspense fallback={<div className="panel map-loading">Loading terminal stream…</div>}><Terminal data={data} onOpenOperation={(operationId) => { setSelectedOperationId(operationId); setView("operations"); }}/></Suspense>} {view === "settings" && <Suspense fallback={<div className="panel map-loading">Loading settings…</div>}><SettingsPlugins source={source} data={data} degraded={telemetryDegraded} updatedAt={dataUpdatedAt}/></Suspense>}</div></main>
+    {isCompact && menuOpen && <button type="button" className="mobile-nav-backdrop" aria-label="Close navigation menu" tabIndex={-1} onClick={closeMenu} />}
+    {isCompact && menuOpen
+      ? <div className="mobile-nav-dialog" role="dialog" aria-modal="true" aria-label="Navigation menu">{navigation}</div>
+      : navigation}
+    <main className="main" inert={isCompact && menuOpen}><header className="topbar"><button ref={menuButtonRef} type="button" className="mobile-menu-trigger" aria-label="Open navigation" aria-controls="primary-navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}><Menu size={20}/></button><div className="crumb"><Boxes size={16}/><span>{data.currentState.project}</span><span>/</span><strong>{nav.find((n)=>n.id===view)?.label}</strong></div><div className="top-actions"><SourceChip source={source} isFetching={isFetching} degraded={telemetryDegraded} updatedAt={dataUpdatedAt}/><div className={`fresh fresh-${telemetryDegraded ? "stale" : data.currentState.freshness.toLowerCase()}`}><span/>{telemetryDegraded ? "LCL LAST SNAPSHOT" : `LCL ${data.currentState.freshness}`}</div><button className="operation-switch" onClick={selectNextOperation} disabled={!selectedOperation}><TerminalSquare size={16}/>{selectedOperation?.workstream ?? "No active operation"}</button></div></header><div className="content">{view === "command" && (selectedOperation ? <CommandCenter data={data} operation={selectedOperation} degraded={telemetryDegraded} onNavigate={navigateTo}/> : <IdleCommandCenter data={data} degraded={telemetryDegraded} onNavigate={navigateTo}/>)} {view === "operations" && <Suspense fallback={<div className="panel map-loading">Loading operations…</div>}><Operations operations={data.operations} evidence={data.evidence} selectedOperationId={selectedOperation?.id ?? ""} onSelectOperation={setSelectedOperationId}/></Suspense>} {view === "history" && <Suspense fallback={<div className="panel map-loading">Loading history…</div>}><HistoryReplay data={data} onOpenOperation={(operationId) => { setSelectedOperationId(operationId); setView("operations"); }}/></Suspense>} {view === "projects" && <Suspense fallback={<div className="panel map-loading">Loading projects…</div>}><Projects data={data} onOpenOperation={(operationId) => { setSelectedOperationId(operationId); setView("operations"); }}/></Suspense>} {view === "agents" && <Suspense fallback={<div className="panel map-loading">Loading agents and models…</div>}><AgentsModels data={data} onOpenOperation={(operationId) => { setSelectedOperationId(operationId); setView("operations"); }}/></Suspense>} {view === "workstreams" && <Suspense fallback={<div className="panel map-loading">Loading workstreams…</div>}><Workstreams data={data} onOpenOperation={(operationId) => { setSelectedOperationId(operationId); setView("operations"); }}/></Suspense>} {view === "system" && <Suspense fallback={<div className="panel map-loading">Loading topology…</div>}><SystemMap data={data}/></Suspense>} {view === "evidence" && <Suspense fallback={<div className="panel map-loading">Loading evidence…</div>}><Evidence data={data}/></Suspense>} {view === "authority" && <Suspense fallback={<div className="panel map-loading">Loading authority…</div>}><Authority data={data}/></Suspense>} {view === "terminal" && <Suspense fallback={<div className="panel map-loading">Loading terminal stream…</div>}><Terminal data={data} onOpenOperation={(operationId) => { setSelectedOperationId(operationId); setView("operations"); }}/></Suspense>} {view === "settings" && <Suspense fallback={<div className="panel map-loading">Loading settings…</div>}><SettingsPlugins source={source} data={data} degraded={telemetryDegraded} updatedAt={dataUpdatedAt}/></Suspense>}</div></main>
     {showGlobalInspector && selectedOperation && <Inspector operation={selectedOperation}/>}
-    <Palette open={paletteOpen} setOpen={setPaletteOpen} setView={setView} data={data} onSelectOperation={setSelectedOperationId}/>
+    <Palette open={paletteOpen} setOpen={setPaletteOpen} setView={navigateTo} data={data} onSelectOperation={setSelectedOperationId}/>
   </div>;
 }
