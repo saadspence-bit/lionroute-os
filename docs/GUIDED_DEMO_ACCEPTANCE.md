@@ -1,4 +1,4 @@
-# v0.3.0 Guided Demo ? Development acceptance
+# v0.3.0 Guided Demo ? Release acceptance
 
 This feature builds on the public, synthetic-only LionRoute OS Control Plane. It does not access or operate the private workspace.
 

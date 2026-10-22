@@ -2,7 +2,7 @@
 
 This portfolio project demonstrates an **observer-only operations dashboard** using React, TypeScript, Vite, and entirely fictional data. Real, reviewed engineering code is open-source; no private LionRoute runtime data or credentials are shipped.
 
-**Current version: v0.3.0 ? Responsive Command Center.** All sample project names, events, timestamps, evidence, model assignments and policy records are synthetic. The demo does not operate the real LionRoute OS.
+**Current version: v0.3.0 ? Guided Demo.** All sample project names, events, timestamps, evidence, model assignments and policy records are synthetic. The demo does not operate the real LionRoute OS.
 
 ## Public preview (entirely fictional sample data)
 
