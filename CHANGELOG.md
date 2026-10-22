@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased ? v0.3 Guided Interactive Demonstrations
+
+- Add a five-stop guided walkthrough spanning sample projects, operations, trace history, evidence and a logical system map.
+- Derive demo sample labels and counts from the existing bundled fictional telemetry, with empty-data fallbacks.
+- Add read-only navigation into existing screens, a return-to-guide action that preserves the selected stop, and a finish/reset path.
+- Include seven new guided-demo model tests, local browser interactions and an original synthetic screenshot.
+- Keep the demo fully local, observer-only and network-denied; no real provider, credential, job action or deployment added.
+- Development branch only: v0.2.0 remains the latest tagged public release pending independent review and PR approval.
+
+
 ## v0.2.0 ? Responsive Command Center (2026-10-22)
 
 - Replace cramped mobile navigation with a labeled keyboard-accessible drawer at widths of 900 pixels and below.

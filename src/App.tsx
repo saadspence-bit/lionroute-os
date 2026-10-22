@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } 
 import {
   Activity,
   Boxes,
+  Compass,
   FileCheck2,
   Gauge,
   GitBranch,
@@ -35,11 +36,13 @@ const Evidence = lazy(() => import("./features/evidence/Evidence"));
 const Authority = lazy(() => import("./features/authority/Authority"));
 const Terminal = lazy(() => import("./features/terminal/Terminal"));
 const SettingsPlugins = lazy(() => import("./features/settings/SettingsPlugins"));
+const DemoTour = lazy(() => import("./features/demo-tour/DemoTour"));
 
-type View = "command" | "operations" | "history" | "projects" | "agents" | "workstreams" | "system" | "evidence" | "authority" | "terminal" | "settings";
+type View = "command" | "tour" | "operations" | "history" | "projects" | "agents" | "workstreams" | "system" | "evidence" | "authority" | "terminal" | "settings";
 
 const nav: Array<{ id: View; label: string; icon: typeof Gauge }> = [
   { id: "command", label: "Command Center", icon: Gauge },
+  { id: "tour", label: "Guided Demo", icon: Compass },
   { id: "operations", label: "Operations", icon: ListTree },
   { id: "history", label: "History / Replay", icon: History },
   { id: "projects", label: "Projects", icon: FolderKanban },
@@ -159,6 +162,7 @@ function CommandCenter({ data, operation, degraded, onNavigate }: { data: Teleme
     ? [...operation.steps].reverse().find((step) => step.status === "running")?.step ?? "Running"
     : "Awaiting next event";
   return <>
+    <section className="demo-tour-invite panel"><div><span className="eyebrow">NEW ? INTERACTIVE GUIDE</span><strong>See how the sample Control Plane works</strong><small>Five fictional, read-only stops through projects, runs, history, evidence, and architecture.</small></div><button type="button" onClick={() => onNavigate("tour")}>Start guided demo <Compass size={17}/></button></section>
     <section className="hero panel">
       <div className="hero-top"><div><div className="kicker"><Activity size={15} /> {operation.status === "running" ? "ACTIVE OPERATION" : "PROJECTED OPERATION"}</div><h1>{operation.name}</h1><p>{operation.summary}</p></div><StatusPill status={operation.status} label={percent === undefined ? "progress unknown" : `${percent}% complete`} /></div>
       {percent !== undefined && <div className="hero-progress"><span style={{ width: `${percent}%` }} /></div>}
@@ -178,6 +182,7 @@ function CommandCenter({ data, operation, degraded, onNavigate }: { data: Teleme
 function IdleCommandCenter({ data, degraded, onNavigate }: { data: TelemetrySnapshot; degraded: boolean; onNavigate: (view: View) => void }) {
   const summary = summarizeControlPlane(data.operations, data.workstreams);
   return <>
+    <section className="demo-tour-invite panel"><div><span className="eyebrow">INTERACTIVE GUIDE</span><strong>Explore the synthetic Control Plane</strong><small>Five read-only walkthrough stops; no accounts or live systems required.</small></div><button type="button" onClick={() => onNavigate("tour")}>Start guided demo <Compass size={17}/></button></section>
     <section className="hero panel idle-hero">
       <div className="hero-top"><div><div className="kicker"><Activity size={15} /> OBSERVER STATUS</div><h1>No active operation</h1><p>The telemetry source is available and currently projects no operation records.</p></div><StatusPill status="idle" label="idle" /></div>
       <div className="hero-grid"><div><span>Stage</span><strong className="mono">{data.currentState.activeStage}</strong></div><div><span>Operations</span><strong>0 projected</strong></div><div><span>Workstreams</span><strong>{summary.activeWorkstreams} active</strong></div><div><span>Telemetry</span><strong>{degraded ? "Last snapshot" : "Connected"}</strong></div></div>
@@ -210,6 +215,8 @@ export function App() {
   const [view, setView] = useState<View>("command");
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [selectedOperationId, setSelectedOperationId] = useState("");
+  const [tourIndex, setTourIndex] = useState(0);
+  const [tourReturnAvailable, setTourReturnAvailable] = useState(false);
   const [isCompact, setIsCompact] = useState(() => window.matchMedia(COMPACT_NAVIGATION_QUERY).matches);
   const [menuOpen, setMenuOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
@@ -221,6 +228,7 @@ export function App() {
     setMenuOpen(false);
   };
   const navigateTo = (nextView: View) => {
+    if (nextView === "tour") setTourReturnAvailable(true);
     setView(nextView);
     if (menuOpen) closeMenu();
   };
@@ -279,6 +287,19 @@ export function App() {
 
   const selectedOperation = useMemo(() => data?.operations.find((o) => o.id === selectedOperationId) ?? data?.operations[0], [data, selectedOperationId]);
 
+  const exploreDemoDestination = (destination: "projects" | "operations" | "history" | "evidence" | "system", operationId?: string) => {
+    if (operationId && data?.operations.some((operation) => operation.id === operationId)) {
+      setSelectedOperationId(operationId);
+    }
+    setTourReturnAvailable(true);
+    navigateTo(destination);
+  };
+  const finishTour = () => {
+    setTourReturnAvailable(false);
+    setTourIndex(0);
+    navigateTo("command");
+  };
+
   const selectNextOperation = () => {
     if (!data || data.operations.length < 2 || !selectedOperation) return;
     const currentIndex = data.operations.findIndex((operation) => operation.id === selectedOperation.id);
@@ -293,7 +314,7 @@ export function App() {
   }
 
   const telemetryDegraded = Boolean(error);
-  const showGlobalInspector = Boolean(selectedOperation && !["operations", "history", "projects", "agents", "workstreams", "system", "evidence", "authority", "terminal", "settings"].includes(view));
+  const showGlobalInspector = Boolean(selectedOperation && !["tour", "operations", "history", "projects", "agents", "workstreams", "system", "evidence", "authority", "terminal", "settings"].includes(view));
 
   const navigation = (
     <nav
@@ -328,7 +349,7 @@ export function App() {
     {isCompact && menuOpen
       ? <div className="mobile-nav-dialog" role="dialog" aria-modal="true" aria-label="Navigation menu">{navigation}</div>
       : navigation}
-    <main className="main" inert={isCompact && menuOpen}><header className="topbar"><button ref={menuButtonRef} type="button" className="mobile-menu-trigger" aria-label="Open navigation" aria-controls="primary-navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}><Menu size={20}/></button><div className="crumb"><Boxes size={16}/><span>{data.currentState.project}</span><span>/</span><strong>{nav.find((n)=>n.id===view)?.label}</strong></div><div className="top-actions"><SourceChip source={source} isFetching={isFetching} degraded={telemetryDegraded} updatedAt={dataUpdatedAt}/><div className={`fresh fresh-${telemetryDegraded ? "stale" : data.currentState.freshness.toLowerCase()}`}><span/>{telemetryDegraded ? "LCL LAST SNAPSHOT" : `LCL ${data.currentState.freshness}`}</div><button className="operation-switch" onClick={selectNextOperation} disabled={!selectedOperation}><TerminalSquare size={16}/>{selectedOperation?.workstream ?? "No active operation"}</button></div></header><div className="content">{view === "command" && (selectedOperation ? <CommandCenter data={data} operation={selectedOperation} degraded={telemetryDegraded} onNavigate={navigateTo}/> : <IdleCommandCenter data={data} degraded={telemetryDegraded} onNavigate={navigateTo}/>)} {view === "operations" && <Suspense fallback={<div className="panel map-loading">Loading operations…</div>}><Operations operations={data.operations} evidence={data.evidence} selectedOperationId={selectedOperation?.id ?? ""} onSelectOperation={setSelectedOperationId}/></Suspense>} {view === "history" && <Suspense fallback={<div className="panel map-loading">Loading history…</div>}><HistoryReplay data={data} onOpenOperation={(operationId) => { setSelectedOperationId(operationId); setView("operations"); }}/></Suspense>} {view === "projects" && <Suspense fallback={<div className="panel map-loading">Loading projects…</div>}><Projects data={data} onOpenOperation={(operationId) => { setSelectedOperationId(operationId); setView("operations"); }}/></Suspense>} {view === "agents" && <Suspense fallback={<div className="panel map-loading">Loading agents and models…</div>}><AgentsModels data={data} onOpenOperation={(operationId) => { setSelectedOperationId(operationId); setView("operations"); }}/></Suspense>} {view === "workstreams" && <Suspense fallback={<div className="panel map-loading">Loading workstreams…</div>}><Workstreams data={data} onOpenOperation={(operationId) => { setSelectedOperationId(operationId); setView("operations"); }}/></Suspense>} {view === "system" && <Suspense fallback={<div className="panel map-loading">Loading topology…</div>}><SystemMap data={data}/></Suspense>} {view === "evidence" && <Suspense fallback={<div className="panel map-loading">Loading evidence…</div>}><Evidence data={data}/></Suspense>} {view === "authority" && <Suspense fallback={<div className="panel map-loading">Loading authority…</div>}><Authority data={data}/></Suspense>} {view === "terminal" && <Suspense fallback={<div className="panel map-loading">Loading terminal stream…</div>}><Terminal data={data} onOpenOperation={(operationId) => { setSelectedOperationId(operationId); setView("operations"); }}/></Suspense>} {view === "settings" && <Suspense fallback={<div className="panel map-loading">Loading settings…</div>}><SettingsPlugins source={source} data={data} degraded={telemetryDegraded} updatedAt={dataUpdatedAt}/></Suspense>}</div></main>
+    <main className="main" inert={isCompact && menuOpen}><header className="topbar"><button ref={menuButtonRef} type="button" className="mobile-menu-trigger" aria-label="Open navigation" aria-controls="primary-navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}><Menu size={20}/></button><div className="crumb"><Boxes size={16}/><span>{data.currentState.project}</span><span>/</span><strong>{nav.find((n)=>n.id===view)?.label}</strong></div><div className="top-actions">{tourReturnAvailable && view !== "tour" && <button type="button" className="demo-tour-return" aria-label="Back to guided demo" onClick={() => navigateTo("tour")}><Compass size={15}/><span>Back to guide</span></button>}<SourceChip source={source} isFetching={isFetching} degraded={telemetryDegraded} updatedAt={dataUpdatedAt}/><div className={`fresh fresh-${telemetryDegraded ? "stale" : data.currentState.freshness.toLowerCase()}`}><span/>{telemetryDegraded ? "LCL LAST SNAPSHOT" : `LCL ${data.currentState.freshness}`}</div><button className="operation-switch" onClick={selectNextOperation} disabled={!selectedOperation}><TerminalSquare size={16}/>{selectedOperation?.workstream ?? "No active operation"}</button></div></header><div className="content">{view === "tour" && <Suspense fallback={<div className="panel map-loading">Loading demo guide?</div>}><DemoTour data={data} index={tourIndex} onIndexChange={setTourIndex} onExplore={exploreDemoDestination} onFinish={finishTour}/></Suspense>} {view === "command" && (selectedOperation ? <CommandCenter data={data} operation={selectedOperation} degraded={telemetryDegraded} onNavigate={navigateTo}/> : <IdleCommandCenter data={data} degraded={telemetryDegraded} onNavigate={navigateTo}/>)} {view === "operations" && <Suspense fallback={<div className="panel map-loading">Loading operations…</div>}><Operations operations={data.operations} evidence={data.evidence} selectedOperationId={selectedOperation?.id ?? ""} onSelectOperation={setSelectedOperationId}/></Suspense>} {view === "history" && <Suspense fallback={<div className="panel map-loading">Loading history…</div>}><HistoryReplay data={data} onOpenOperation={(operationId) => { setSelectedOperationId(operationId); setView("operations"); }}/></Suspense>} {view === "projects" && <Suspense fallback={<div className="panel map-loading">Loading projects…</div>}><Projects data={data} onOpenOperation={(operationId) => { setSelectedOperationId(operationId); setView("operations"); }}/></Suspense>} {view === "agents" && <Suspense fallback={<div className="panel map-loading">Loading agents and models…</div>}><AgentsModels data={data} onOpenOperation={(operationId) => { setSelectedOperationId(operationId); setView("operations"); }}/></Suspense>} {view === "workstreams" && <Suspense fallback={<div className="panel map-loading">Loading workstreams…</div>}><Workstreams data={data} onOpenOperation={(operationId) => { setSelectedOperationId(operationId); setView("operations"); }}/></Suspense>} {view === "system" && <Suspense fallback={<div className="panel map-loading">Loading topology…</div>}><SystemMap data={data}/></Suspense>} {view === "evidence" && <Suspense fallback={<div className="panel map-loading">Loading evidence…</div>}><Evidence data={data}/></Suspense>} {view === "authority" && <Suspense fallback={<div className="panel map-loading">Loading authority…</div>}><Authority data={data}/></Suspense>} {view === "terminal" && <Suspense fallback={<div className="panel map-loading">Loading terminal stream…</div>}><Terminal data={data} onOpenOperation={(operationId) => { setSelectedOperationId(operationId); setView("operations"); }}/></Suspense>} {view === "settings" && <Suspense fallback={<div className="panel map-loading">Loading settings…</div>}><SettingsPlugins source={source} data={data} degraded={telemetryDegraded} updatedAt={dataUpdatedAt}/></Suspense>}</div></main>
     {showGlobalInspector && selectedOperation && <Inspector operation={selectedOperation}/>}
     <Palette open={paletteOpen} setOpen={setPaletteOpen} setView={navigateTo} data={data} onSelectOperation={setSelectedOperationId}/>
   </div>;
