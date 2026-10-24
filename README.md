@@ -26,9 +26,13 @@ A new five-stop interactive walkthrough helps visitors explore the **fictional**
 
 *Original screenshot from the local synthetic-only Guided Demo included with the v0.3.0 source release; not a hosted production service.* See [Guided Demo acceptance](docs/GUIDED_DEMO_ACCEPTANCE.md).
 
-## Static hosting candidate (v0.4, NOT LIVE)
+## Live public demo (v0.4 hosting milestone)
 
-The next phase prepares a manual-only GitHub Pages build for the existing synthetic Control Plane. **No public hosted demo is active yet**, and the current official source release remains v0.3.0. GitHub will not deploy on code pushes or merges; activation requires a separately approved owner action. See [static hosting security plan](docs/STATIC_HOSTING_V0.4.md).
+**[Launch the LionRoute OS Control Plane demo](https://saadspence-bit.github.io/lionroute-os/)** - a publicly accessible, read-only website using bundled, entirely fictional data. It does **not** connect to the private LionRoute OS, operate a real system, or show production activity.
+
+The v0.4 static-hosting milestone was independently reviewed in [PR #8](https://github.com/saadspence-bit/lionroute-os/pull/8), merged as public commit [5e4a06b](https://github.com/saadspence-bit/lionroute-os/commit/5e4a06ba2848449be9a716aaf748b149abb44312), and deployed with [successful owner-authorized GitHub Actions run #40054294574](https://github.com/saadspence-bit/lionroute-os/actions/runs/40054294574). Anonymous HTTPS access, the five-stop guided tour, a 390px mobile layout, and CSP blocking of a test API request were verified after deployment. The latest **formal tagged source release is still v0.3.0**; v0.4.0 has not been released.
+
+Deployment is **manual-only**: pushes, merges, and tags do not redeploy the site. Every future deployment requires a separate approved public-main commit SHA and owner dispatch. See [hosting controls and verification evidence](docs/STATIC_HOSTING_V0.4.md).
 
 ## Features
 Command Center; Operations with nested traces; History / Replay; Projects; Agents & Models; Workstreams; System Map; Evidence; Authority; and read-only Terminal. Filtering, keyboard navigation and drill-down are presentation behavior, not system actions.
