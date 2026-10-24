@@ -11,7 +11,10 @@
     "typecheck": "tsc -b --pretty false",
     "test": "vitest run",
     "test:watch": "vitest",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:pages": "node scripts/pages-static.mjs build",
+    "verify:pages": "node scripts/pages-static.mjs verify",
+    "test:pages": "node --test scripts/pages-static-checks.mjs"
   },
   "dependencies": {
     "@tanstack/react-query": "5.104.3",

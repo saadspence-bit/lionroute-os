@@ -1,0 +1,88 @@
+# Manual-only staging. Merging this workflow does NOT publish a Pages site.
+# Requires separate owner activation: Settings > Pages > Source = GitHub Actions.
+name: Reviewed public demo hosting
+on:
+  workflow_dispatch:
+    inputs:
+      approved_sha:
+        description: "Full, reviewed public main SHA approved for this deployment"
+        required: true
+        type: string
+      confirm:
+        description: "Enter DEPLOY_SYNTHETIC_DEMO to authorize one deployment"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: reviewed-pages-public-demo
+  cancel-in-progress: false
+
+jobs:
+  verify-and-package:
+    if: github.ref == 'refs/heads/main' && github.actor == github.repository_owner
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Bind manual approval to exact public main commit
+        env:
+          APPROVED_SHA: ${{ inputs.approved_sha }}
+          CONFIRM: ${{ inputs.confirm }}
+          ACTUAL_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$CONFIRM" = "DEPLOY_SYNTHETIC_DEMO"
+          test "$APPROVED_SHA" = "$ACTUAL_SHA"
+          test "${#APPROVED_SHA}" -eq 40
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, pinned
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4, pinned
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install from exact lockfile (no lifecycle scripts)
+        run: npm ci --ignore-scripts
+      - name: Audit dependency vulnerabilities
+        run: npm audit --audit-level=high
+      - name: Dedicated secret scan
+        run: bash scripts/ci-gitleaks.sh
+      - name: Verify fictional-only public source
+        run: |
+          npm run verify:public
+          npm run check:source
+          npm run typecheck
+          npm test
+      - name: Exercise static artifact failure-mode tests
+        run: npm run test:pages
+      - name: Build reviewed repository-subpath artifact
+        run: npm run build:pages
+      - name: Verify static bundle, local assets, and CSP
+        run: npm run verify:pages
+      - name: Configure Pages (requires separately approved Pages settings)
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5, pinned
+      - name: Upload only verified dist/ bundle
+        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4, pinned
+        with:
+          path: './dist'
+
+  deploy:
+    needs: verify-and-package
+    if: github.ref == 'refs/heads/main' && github.actor == github.repository_owner
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy reviewed, verified Pages artifact
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4, pinned

@@ -26,6 +26,10 @@ A new five-stop interactive walkthrough helps visitors explore the **fictional**
 
 *Original screenshot from the local synthetic-only Guided Demo included with the v0.3.0 source release; not a hosted production service.* See [Guided Demo acceptance](docs/GUIDED_DEMO_ACCEPTANCE.md).
 
+## Static hosting candidate (v0.4, NOT LIVE)
+
+The next phase prepares a manual-only GitHub Pages build for the existing synthetic Control Plane. **No public hosted demo is active yet**, and the current official source release remains v0.3.0. GitHub will not deploy on code pushes or merges; activation requires a separately approved owner action. See [static hosting security plan](docs/STATIC_HOSTING_V0.4.md).
+
 ## Features
 Command Center; Operations with nested traces; History / Replay; Projects; Agents & Models; Workstreams; System Map; Evidence; Authority; and read-only Terminal. Filtering, keyboard navigation and drill-down are presentation behavior, not system actions.
 

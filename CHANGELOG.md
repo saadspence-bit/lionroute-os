@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased ? v0.4 static-hosting candidate (NOT DEPLOYED)
+
+- Add an opt-in GitHub Pages build with correct repository subpath, locally bundled assets and verified CSP.
+- Add fail-closed static bundle checks and offline denial/regression tests; retain fictional-data and network isolation.
+- Prepare a pinned-action, owner-dispatched-only Pages workflow with read-only build and separate Pages-write deployment jobs.
+- Extend existing GitHub CI to validate the Pages build. No deployment is triggered or Pages settings activated.
+- Require independent review and explicit owner authorization before publishing a live static site.
+
+
 ## v0.3.0 (2026-10-22) ? v0.3 Guided Interactive Demonstrations
 
 - Add a five-stop guided walkthrough spanning sample projects, operations, trace history, evidence and a logical system map.
