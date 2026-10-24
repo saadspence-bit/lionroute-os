@@ -2,7 +2,7 @@
 
 ## Purpose and verified status
 
-**Public demo:** https://saadspence-bit.github.io/lionroute-os/
+**Public demo:** [Open the live LionRoute OS demo](https://saadspence-bit.github.io/lionroute-os/)
 
 The Apache-2.0-licensed LionRoute OS public Control Plane is now hosted on GitHub Pages as a **fictional, read-only browser demonstration**. It is not a production LionRoute service. The website does not connect to the private LionRoute workspace, control a laptop or Chat On Steroids, handle real credentials, run models, execute commands, or grant operator authority.
 

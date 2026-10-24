@@ -32,11 +32,11 @@ function redactReviewedPublicLinks(content, relative) {
     while (true) {
       const at = redacted.indexOf(url, cursor);
       if (at === -1) break;
-      const before = at > 0 ? redacted[at - 1] : "";
-      const after = redacted[at + url.length] ?? "";
-      // Do not let an approved URL hide a longer, unreviewed hostname/path.
-      const beginsAtLinkBoundary = !before || /[\s(<]/.test(before);
-      const endsAtLinkBoundary = !after || /[\s)>]/.test(after);
+      // Only a complete Markdown link target is eligible: [label](EXACT_URL).
+      // URL whitespace, newlines, NBSP, suffixes and query strings must fail.
+      // Browsers can normalize some whitespace into extra unreviewed URL paths.
+      const beginsAtLinkBoundary = redacted.slice(at - 2, at) === "](";
+      const endsAtLinkBoundary = redacted[at + url.length] === ")";
       if (!beginsAtLinkBoundary || !endsAtLinkBoundary) {
         cursor = at + url.length;
         continue;
