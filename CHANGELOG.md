@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased - v0.4 static-hosting milestone (site deployed; release tag pending)
+## v0.4.0 (2026-10-24 UTC) - Reviewed static hosting source release
 
 - Add an opt-in GitHub Pages build with correct repository subpath, locally bundled assets and verified CSP.
 - Add fail-closed static bundle checks and offline denial/regression tests; retain fictional-data and network isolation.
@@ -8,7 +8,7 @@
 - Extend GitHub CI to validate the Pages build; code pushes, merges and tags do not deploy the public site.
 - Independently reviewed public PR #8; merged commit 5e4a06ba2848449be9a716aaf748b149abb44312. Owner-authorized manual Pages deployment run 40054294574 passed both verification and deployment jobs (2026-10-24 UTC).
 - Public fictional-only demo: [live site](https://saadspence-bit.github.io/lionroute-os/). Anonymous HTTPS and browser checks verified desktop UI, five guided stops, 390px mobile layout, and test API fetch blocked by meta CSP. Private runtime and credentials were not connected. Future deployments remain owner-dispatched and exact-SHA gated.
-- The public hosting milestone is deployed, but no v0.4.0 formal source-release tag has been published.
+- Formal v0.4.0 source release records the verified hosting milestone; the release/tag itself does not redeploy Pages.
 
 
 ## v0.3.0 (2026-10-22) ? v0.3 Guided Interactive Demonstrations

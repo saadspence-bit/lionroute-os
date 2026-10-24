@@ -6,7 +6,7 @@
 
 The Apache-2.0-licensed LionRoute OS public Control Plane is now hosted on GitHub Pages as a **fictional, read-only browser demonstration**. It is not a production LionRoute service. The website does not connect to the private LionRoute workspace, control a laptop or Chat On Steroids, handle real credentials, run models, execute commands, or grant operator authority.
 
-The latest formal tagged source release remains **v0.3.0**. The v0.4 hosting milestone is deployed, but **v0.4.0 has not been formally tagged or released**.
+The **v0.4.0 source release** records this reviewed hosting milestone. The public site was last deployed using approved commit 5e4a06ba2848449be9a716aaf748b149abb44312; publishing the source release does **not** trigger another deployment.
 
 ## Source, approval and deployment evidence
 

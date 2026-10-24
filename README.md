@@ -2,7 +2,7 @@
 
 This portfolio project demonstrates an **observer-only operations dashboard** using React, TypeScript, Vite, and entirely fictional data. Real, reviewed engineering code is open-source; no private LionRoute runtime data or credentials are shipped.
 
-**Current version: v0.3.0 ? Guided Demo.** All sample project names, events, timestamps, evidence, model assignments and policy records are synthetic. The demo does not operate the real LionRoute OS.
+**Current source version: v0.4.0 - Reviewed static hosting.** All sample project names, events, timestamps, evidence, model assignments and policy records are synthetic. The demo does not operate the real LionRoute OS.
 
 ## Public preview (entirely fictional sample data)
 
@@ -30,9 +30,9 @@ A new five-stop interactive walkthrough helps visitors explore the **fictional**
 
 **[Launch the LionRoute OS Control Plane demo](https://saadspence-bit.github.io/lionroute-os/)** - a publicly accessible, read-only website using bundled, entirely fictional data. It does **not** connect to the private LionRoute OS, operate a real system, or show production activity.
 
-The v0.4 static-hosting milestone was independently reviewed in [PR #8](https://github.com/saadspence-bit/lionroute-os/pull/8), merged as public commit [5e4a06b](https://github.com/saadspence-bit/lionroute-os/commit/5e4a06ba2848449be9a716aaf748b149abb44312), and deployed with [successful owner-authorized GitHub Actions run #40054294574](https://github.com/saadspence-bit/lionroute-os/actions/runs/40054294574). Anonymous HTTPS access, the five-stop guided tour, a 390px mobile layout, and CSP blocking of a test API request were verified after deployment. The latest **formal tagged source release is still v0.3.0**; v0.4.0 has not been released.
+The v0.4 static-hosting milestone was independently reviewed in [PR #8](https://github.com/saadspence-bit/lionroute-os/pull/8), merged as public commit [5e4a06b](https://github.com/saadspence-bit/lionroute-os/commit/5e4a06ba2848449be9a716aaf748b149abb44312), and deployed with [successful owner-authorized GitHub Actions run #40054294574](https://github.com/saadspence-bit/lionroute-os/actions/runs/40054294574). Anonymous HTTPS access, the five-stop guided tour, a 390px mobile layout, and CSP blocking of a test API request were verified after deployment. The v0.4.0 source release documents this reviewed hosting milestone; publication of a source tag does **not** trigger another website deployment.
 
-Deployment is **manual-only**: pushes, merges, and tags do not redeploy the site. Every future deployment requires a separate approved public-main commit SHA and owner dispatch. See [hosting controls and verification evidence](docs/STATIC_HOSTING_V0.4.md).
+Deployment is **manual-only**: pushes, merges, and tags do not redeploy the site. Every future deployment requires a separate approved public-main commit SHA and owner dispatch. See [hosting controls and verification evidence](docs/STATIC_HOSTING_V0.4.md) and [v0.4.0 release notes](docs/RELEASE_V0.4.0.md).
 
 ## Features
 Command Center; Operations with nested traces; History / Replay; Projects; Agents & Models; Workstreams; System Map; Evidence; Authority; and read-only Terminal. Filtering, keyboard navigation and drill-down are presentation behavior, not system actions.
