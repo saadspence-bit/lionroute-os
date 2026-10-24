@@ -1,30 +1,39 @@
-# v0.4 - Reviewed static hosting candidate (not deployed)
+# v0.4 - Live reviewed static hosting (synthetic-only)
 
-## Purpose and current status
+## Purpose and verified status
 
-This is a **preparation-only** GitHub Pages candidate for the public Apache-2.0-licensed LionRoute OS Control Plane UI. At this PR, **no Pages site is configured, no hosted demo is live, no deployment has been triggered** and the latest formal public source release remains v0.3.0.
+**Public demo:** https://saadspence-bit.github.io/lionroute-os/
 
-The intended future site is a public GitHub Pages project site under the repository-specific path /lionroute-os/. This is a demo only, using bundled **fictional sample telemetry**. It does not connect to the private LionRoute workspace, control any laptop or CoS application, handle real credentials, execute shell commands, run model providers, or grant operator authority.
+The Apache-2.0-licensed LionRoute OS public Control Plane is now hosted on GitHub Pages as a **fictional, read-only browser demonstration**. It is not a production LionRoute service. The website does not connect to the private LionRoute workspace, control a laptop or Chat On Steroids, handle real credentials, run models, execute commands, or grant operator authority.
+
+The latest formal tagged source release remains **v0.3.0**. The v0.4 hosting milestone is deployed, but **v0.4.0 has not been formally tagged or released**.
+
+## Source, approval and deployment evidence
+
+- [Reviewed PR #8](https://github.com/saadspence-bit/lionroute-os/pull/8) - security review APPROVE at reviewed source 7bfa221d4ebcb021be86fd9df20e8662d240ca5d, then merged.
+- [Public main merge commit](https://github.com/saadspence-bit/lionroute-os/commit/5e4a06ba2848449be9a716aaf748b149abb44312) - 5e4a06ba2848449be9a716aaf748b149abb44312.
+- [Post-merge validation](https://github.com/saadspence-bit/lionroute-os/actions/runs/40053822500) - SUCCESS against that exact public main commit.
+- [Owner-authorized manual Pages deployment](https://github.com/saadspence-bit/lionroute-os/actions/runs/40054294574) - SUCCESS on 2026-10-24 UTC against that same commit, both verify-and-package and deploy jobs passing.
+- GitHub Pages was configured for **GitHub Actions** publishing with HTTPS enforced, no custom domain, and a github-pages environment allowing **main** only. This is a repository-project site under /lionroute-os/.
+- Anonymous HTTPS GET returned **200**. Desktop Chrome loaded the public React application and five-stop tour. Separate headless mobile Chrome at **390px** verified no horizontal page overflow, five tour stops, and explicit fictional-data disclosure. Browser CSP blocked a test API fetch; the mobile run observed no external HTTP requests. These are scoped smoke checks, not complete production or security certification.
 
 ## Architecture and trust boundary
 
-- Vite uses base / for local development. Only npm run build:pages explicitly enables the reviewed /lionroute-os/ asset base.
-- HTML includes a strict meta Content Security Policy: default-src none, script-src self, connect-src none, object-src none and form-action none. JavaScript, CSS and favicon must resolve under the same repository path.
-- The runtime telemetry source is pinned to fictional in-repo data. Source validation rejects browser network calls and browser-side mutation APIs.
-- A fail-closed artifact verifier checks CSP, asset integrity, no source maps/environment files/custom domain, no symlinks or dotfiles, and bounded bundle size and file count. The Pages upload action excludes hidden files, so no hidden .nojekyll marker is generated or relied upon; GitHub Actions deploys the ready-made static artifact without Jekyll processing.
-- GitHub Pages is **static-only**. No dynamic backend, authentication, payments, cookies, operator control, repository secrets or API credentials are required or authorized.
-- This meta CSP is enforced by supporting browsers. GitHub Pages does not provide arbitrary custom HTTP security headers through this repo; do not claim that frame-ancestors or other HTTP-only headers are enforced.
-- Content served as public Pages is visible to everyone. Never expose private project data, identifying logs or user-supplied secrets in future updates.
+- Vite uses base / in local development. Only npm run build:pages explicitly enables the reviewed /lionroute-os/ asset path.
+- HTML includes a meta Content Security Policy: default-src none, script-src self, style-src self with unsafe-inline, img-src self and data, font-src self, connect-src none, object-src none, base-uri none, and form-action none.
+- All JavaScript, CSS and favicon build references use local assets under /lionroute-os/. The runtime telemetry source is explicitly pinned to fictional in-repository data; source validation rejects browser network and mutation APIs.
+- The fail-closed Pages verifier checks HTML CSP, asset references, unexpected files, symlinks and dotfiles, source maps, custom domains, file count and bundle byte caps. The Pages upload excludes hidden files; no hidden .nojekyll marker is generated or required.
+- GitHub Pages serves **static files only**. No dynamic backend, real authentication, payment service, cookies, operator control, API keys or provider integration is part of this hosted build.
+- The CSP is a **meta** policy, not a claim that GitHub Pages supplies arbitrary response headers. In particular, this repository does not enforce HTTP-header-only directives such as frame-ancestors.
+- Site content is visible to the public. Future updates must never expose private project records, live telemetry, identifying logs or secrets.
 
-## Deployment safety model
+## Controlled deployment model for future updates
 
-The proposed .github/workflows/pages-manual.yml is **workflow_dispatch only**. It does NOT deploy on pushes, PRs, merges, release tags or scheduled events. The build job has read-only repository permissions. Only the separate deploy job receives pages:write and id-token:write, after a successful verified build.
+The published .github/workflows/pages-manual.yml has **workflow_dispatch only**. Pushes, pull requests, merges and release tags do **not** redeploy the site. A deployment requires the repository owner, main branch, exact approved 40-character main commit SHA, and the manual confirmation phrase. Only the separate deployment job has pages:write and id-token:write; the build job has read-only repository permissions. All external actions in the **manual Pages workflow** are pinned to upstream commit SHAs (the separate general CI workflow is not described by this claim).
 
-A dispatch requires: (1) repository owner, (2) default main branch, (3) explicitly approved 40-character main commit SHA matching the dispatch commit, and (4) an exact manual confirmation phrase. Protect the github-pages deployment environment with a default-branch-only rule and owner approval where available. All external GitHub Actions **in the manual deployment workflow** are pinned to full upstream commit hashes; the pre-existing general CI workflow is handled separately. No cross-repository publishing credentials are added.
+The github-pages deployment environment is restricted to main. Do not imply required human environment reviewers are configured: account/plan support and current settings must be checked before making that claim. For any later update, independently review and test the new source, obtain appropriate owner approval, dispatch with that exact SHA, and repeat anonymous hosted smoke tests. A change to public main alone does **not** replace the already hosted artifact.
 
-Because the site does not yet exist, **merging the workflow is NOT deployment approval**. Actual activation requires a separate explicit owner decision after independent review and GitHub CI.
-
-## Validation commands
+## Reproducible local validation
 
     npm ci --ignore-scripts
     npm audit --audit-level=high
@@ -36,20 +45,20 @@ Because the site does not yet exist, **merging the workflow is NOT deployment ap
     npm run build:pages
     npm run verify:pages
 
-Existing Python review-only planner tests and Gitleaks run in normal GitHub CI. Linux CI tests symlink denial; Windows accounts without symlink privileges may skip that one fixture test locally.
+The general CI workflow additionally runs the Python update-planner tests and pinned Gitleaks secret scanning. Linux CI exercises the symlink-denial test; Windows without symlink privileges can skip that one local fixture.
 
-## Activation checklist (not yet authorized or performed)
+## Future deployment checklist
 
-1. Obtain independent read-only security review of exact source, static bundle, and manual deployment workflow; resolve blockers.
-2. Merge a passing, reviewed public PR; verify post-merge GitHub CI and exact main commit.
-3. Obtain explicit owner approval for external Pages activation and that exact source commit.
-4. In GitHub Settings > Pages select **GitHub Actions** as the build/deployment source. Protect the github-pages environment with a default-branch-only rule and any required-approval controls available.
-5. **Only after approval**, manually dispatch the reviewed workflow from main with the approved full commit SHA and exact confirmation phrase; never auto-dispatch.
-6. Verify the public URL anonymously, all JS/CSS/favicon under /lionroute-os/, synthetic UI, CSP-denied API requests, mobile navigation, and no remote requests.
-7. Publish the verified URL to README/release history only after smoke checks pass. On disclosure or access failure, disable hosting through an owner-controlled process.
+1. Independently review proposed changes to public source, source disclosure, and manual deployment workflow; resolve any blockers.
+2. Merge only approved public changes and confirm post-merge CI succeeds on the exact public main SHA.
+3. Obtain the owner's authorization for another external deployment using that reviewed SHA.
+4. Verify Pages source, environment restrictions, pinned workflow actions and repository settings still match approved policy.
+5. Manually dispatch from main with the approved commit SHA and required confirmation; wait for successful verify-and-package and deploy jobs.
+6. Recheck the public URL anonymously, local JS/CSS/favicon, fictional disclosure, CSP-denied API fetch, guided tour, 390px mobile layout and absence of unexpected requests.
+7. Publish release notes or update links only for verified deployed bytes. Disable hosting through an approved owner-controlled response if disclosure or access checks fail.
 
 ## Limits
 
-GitHub Pages has host quotas and account restrictions. A public static site does not provide app authentication. Meta CSP cannot replace all server-level HTTP headers. Browser checks are not complete accessibility, vulnerability, provenance or production certification.
+GitHub Pages quotas and account settings may change. Public static hosting is not private, authenticated application hosting. A meta CSP does not replace server-enforced security headers; basic browser smoke tests do not certify complete accessibility, vulnerability resistance or provenance.
 
-No custom domain, cloud payment account, GitHub secret, analytics, tracking, provider connection, automatic deploy trigger, npm publication, or private-to-public mirror is part of this candidate.
+This milestone adds no custom domain, cloud payment account, secret, analytics, tracking, live provider connection, automatic deployment trigger, npm publication, or private-to-public code mirroring.

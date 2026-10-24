@@ -8,6 +8,46 @@ const blockedExtensions = new Set([".pem", ".p12", ".pfx", ".key", ".sqlite", ".
 const findings = [];
 let inspected = 0;
 
+// The GitHub owner handle is intentionally excluded from public source, but
+// approved public docs can link to the already-public repository and Pages.
+// Permit ONLY exact independently verified public URLs in these four docs.
+// All other owner-name occurrences and private-name markers remain forbidden.
+const publicOwner = "saad" + "spence-bit";
+const publicRepo = "https://github.com/" + publicOwner + "/lionroute-os";
+const reviewedDocPaths = new Set([
+  "README.md", "CHANGELOG.md", "ROADMAP.md", "docs/STATIC_HOSTING_V0.4.md",
+]);
+const reviewedPublicLinks = [
+  "https://" + publicOwner + ".github.io/lionroute-os/",
+  publicRepo + "/pull/8",
+  publicRepo + "/commit/5e4a06ba2848449be9a716aaf748b149abb44312",
+  publicRepo + "/actions/runs/40053822500",
+  publicRepo + "/actions/runs/40054294574",
+];
+function redactReviewedPublicLinks(content, relative) {
+  if (!reviewedDocPaths.has(relative)) return content;
+  let redacted = content;
+  for (const url of reviewedPublicLinks) {
+    let cursor = 0;
+    while (true) {
+      const at = redacted.indexOf(url, cursor);
+      if (at === -1) break;
+      const before = at > 0 ? redacted[at - 1] : "";
+      const after = redacted[at + url.length] ?? "";
+      // Do not let an approved URL hide a longer, unreviewed hostname/path.
+      const beginsAtLinkBoundary = !before || /[\s(<]/.test(before);
+      const endsAtLinkBoundary = !after || /[\s)>]/.test(after);
+      if (!beginsAtLinkBoundary || !endsAtLinkBoundary) {
+        cursor = at + url.length;
+        continue;
+      }
+      redacted = redacted.slice(0, at) + "[REVIEWED_PUBLIC_LINK]" + redacted.slice(at + url.length);
+      cursor = at + "[REVIEWED_PUBLIC_LINK]".length;
+    }
+  }
+  return redacted;
+}
+
 function visit(current) {
   for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
     if (excluded.has(entry.name)) continue;
@@ -36,6 +76,7 @@ function visit(current) {
       continue;
     }
     const content = fs.readFileSync(target, "utf8");
+    const nameCheckedContent = redactReviewedPublicLinks(content, relative);
     inspected++;
     const forbiddenNames = [
       "Market" + " AI App", "Credit" + " Repair App",
@@ -43,7 +84,7 @@ function visit(current) {
       "Saad" + "S", "saad" + "spence-bit",
     ];
     for (const name of forbiddenNames) {
-      if (content.toLowerCase().includes(name.toLowerCase())) findings.push(relative + ": private-name marker");
+      if (nameCheckedContent.toLowerCase().includes(name.toLowerCase())) findings.push(relative + ": private-name marker");
     }
     const markers = [
       new RegExp("-----BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY-----"),

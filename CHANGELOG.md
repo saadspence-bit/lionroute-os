@@ -1,12 +1,14 @@
 # Changelog
 
-## Unreleased ? v0.4 static-hosting candidate (NOT DEPLOYED)
+## Unreleased - v0.4 static-hosting milestone (site deployed; release tag pending)
 
 - Add an opt-in GitHub Pages build with correct repository subpath, locally bundled assets and verified CSP.
 - Add fail-closed static bundle checks and offline denial/regression tests; retain fictional-data and network isolation.
 - Prepare a pinned-action, owner-dispatched-only Pages workflow with read-only build and separate Pages-write deployment jobs.
-- Extend existing GitHub CI to validate the Pages build. No deployment is triggered or Pages settings activated.
-- Require independent review and explicit owner authorization before publishing a live static site.
+- Extend GitHub CI to validate the Pages build; code pushes, merges and tags do not deploy the public site.
+- Independently reviewed public PR #8; merged commit 5e4a06ba2848449be9a716aaf748b149abb44312. Owner-authorized manual Pages deployment run 40054294574 passed both verification and deployment jobs (2026-10-24 UTC).
+- Public fictional-only demo: [live site](https://saadspence-bit.github.io/lionroute-os/). Anonymous HTTPS and browser checks verified desktop UI, five guided stops, 390px mobile layout, and test API fetch blocked by meta CSP. Private runtime and credentials were not connected. Future deployments remain owner-dispatched and exact-SHA gated.
+- The public hosting milestone is deployed, but no v0.4.0 formal source-release tag has been published.
 
 
 ## v0.3.0 (2026-10-22) ? v0.3 Guided Interactive Demonstrations
@@ -37,4 +39,4 @@
 - Published public-first documentation, a synthetic screenshot, and GitHub Actions CI with pinned Gitleaks, npm audit, source-boundary checks, 57 frontend tests, six update-planner tests, typecheck, and build.
 - Added a nonpublishing committed-source update planner, a 28-file baseline and offline failure-mode tests.
 
-**Public repository:** this public repository. The first public commit was independently initialized without any private Git ancestry. This project currently publishes source code and screenshots; no public live demo hosting or deployment is claimed.
+**Public repository:** this public repository. The first public commit was independently initialized without any private Git ancestry. The v0.1.0 milestone published source code and screenshots only; the separately authorized v0.4 hosting milestone added a live synthetic-only GitHub Pages demo.
