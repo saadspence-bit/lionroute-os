@@ -17,7 +17,7 @@
     "test:pages": "node --test scripts/pages-static-checks.mjs"
   },
   "dependencies": {
-    "@tanstack/react-query": "5.104.3",
+    "@tanstack/react-query": "5.104.5",
     "@tanstack/react-table": "9.3.1",
     "@tanstack/react-virtual": "3.14.19",
     "@xyflow/react": "12.12.0",
